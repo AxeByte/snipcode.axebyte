@@ -1,0 +1,476 @@
+## Makefile
+
+cat <<SNIPCODE_HEREDOC
+.PHONY: all build clean
+
+APP := snipcode
+GOOS_ARCH := linux/amd64 linux/arm64 linux/386 linux/arm darwin/amd64 darwin/arm64 windows/amd64 windows/arm64 windows/386
+
+all: build
+
+build:
+	@for t in $$(GOOS_ARCH); do \
+		os=$${t%/*}; arch=$${t#*/}; \
+		bin=$${APP}-$${os}-$${arch}; \
+		if [ "$$os" = "windows" ]; then bin:=$${bin}.exe; fi; \
+		GOOS=$$os GOARCH=$$arch go build -o $$bin ./...; \
+	done
+
+clean:
+	rm -f snipcode-* snipcode.exe
+SNIPCODE_HEREDOC
+
+---
+
+## README.md
+
+cat <<SNIPCODE_HEREDOC
+# snipcode
+
+snipcode is a CLI tool that collects your source code, skips files per .grepattern.yaml, and outputs a single file formatted with heredocs for each source file—ideal for LLM ingestion.
+
+## Configuration: .grepattern.yaml
+```yaml
+default_name: comp_code.txt
+ignore_patterns:
+  - "node_modules/**"
+  - "*.test.go"
+  - "docs/**"
+```
+
+## Installation
+```bash
+go install ${MODULE_PATH}@latest
+```
+
+## Usage
+```bash
+snipcode init               # create .grepattern.yaml
+snipcode compile            # compile files
+snipcode compile -o out.txt # override output
+snipcode compile --with-tree # append file tree
+```
+
+## Logging
+- ➡️ per-file inclusion with char count
+- 🌳 tree listing if requested
+- 📥 final summary
+SNIPCODE_HEREDOC
+
+---
+
+## go.mod
+
+cat <<SNIPCODE_HEREDOC
+module github.com/AxeByte/snipcode.axebyte
+
+go 1.21.5
+
+require (
+	github.com/bmatcuk/doublestar/v4 v4.8.1
+	github.com/sirupsen/logrus v1.9.3
+	github.com/urfave/cli/v2 v2.27.6
+	gopkg.in/yaml.v3 v3.0.1
+)
+
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
+	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
+)
+SNIPCODE_HEREDOC
+
+---
+
+## go.sum
+
+cat <<SNIPCODE_HEREDOC
+github.com/bmatcuk/doublestar/v4 v4.8.1 h1:54Bopc5c2cAvhLRAzqOGCYHYyhcDHsFF4wWIR5wKP38=
+github.com/bmatcuk/doublestar/v4 v4.8.1/go.mod h1:xBQ8jztBU6kakFMg+8WGxn0c6z1fTSPVIjEY1Wr7jzc=
+github.com/cpuguy83/go-md2man/v2 v2.0.5 h1:ZtcqGrnekaHpVLArFSe4HK5DoKx1T0rq2DwVB0alcyc=
+github.com/cpuguy83/go-md2man/v2 v2.0.5/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
+github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
+github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
+github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
+github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
+github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
+github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
+github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
+github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
+github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/urfave/cli/v2 v2.27.6 h1:VdRdS98FNhKZ8/Az8B7MTyGQmpIr36O1EHybx/LaZ4g=
+github.com/urfave/cli/v2 v2.27.6/go.mod h1:3Sevf16NykTbInEnD0yKkjDAeZDS0A6bzhBH5hrMvTQ=
+github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 h1:gEOO8jv9F4OT7lGCjxCBTO/36wtF6j2nSip77qHd4x4=
+github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1/go.mod h1:Ohn+xnUBiLI6FVj/9LpzZWtj1/D6lUovWYBkxHVV3aM=
+golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 h1:0A+M6Uqn+Eje4kHMK80dtF3JCXC4ykBgQG4Fe06QRhQ=
+golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
+gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
+gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
+gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+SNIPCODE_HEREDOC
+
+---
+
+## internal/collector/collector.go
+
+cat <<SNIPCODE_HEREDOC
+package collector
+
+import (
+  "io/fs"
+  "path/filepath"
+  "sort"
+
+  "github.com/bmatcuk/doublestar/v4"
+)
+
+// Collect returns files not matching ignore patterns
+func Collect(root string, patterns []string) ([]string, error) {
+  var files []string
+  err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+    if err != nil || d.IsDir() || path == ".grepattern.yaml" {
+      return err
+    }
+    for _, pat := range patterns {
+      if ok, _ := doublestar.PathMatch(pat, path); ok {
+        return nil
+      }
+    }
+    files = append(files, path)
+    return nil
+  })
+  sort.Strings(files)
+  return files, err
+}
+SNIPCODE_HEREDOC
+
+---
+
+## internal/config/config.go
+
+cat <<SNIPCODE_HEREDOC
+package config
+
+import (
+  "errors"
+  "os"
+
+  "github.com/urfave/cli/v2"
+  "gopkg.in/yaml.v3"
+)
+
+type Config struct {
+  DefaultName    string   `yaml:"default_name"`
+  IgnorePatterns []string `yaml:"ignore_patterns"`
+}
+
+// InitConfig writes a default .grepattern.yaml
+func InitConfig(c *cli.Context) error {
+  cfg := Config{DefaultName: "comp_code.txt", IgnorePatterns: []string{}}
+  data, err := yaml.Marshal(cfg)
+  if err != nil {
+    return err
+  }
+  return os.WriteFile(".grepattern.yaml", data, 0644)
+}
+
+// LoadConfig loads and parses .grepattern.yaml
+func LoadConfig(path string) (*Config, error) {
+  b, err := os.ReadFile(path)
+  if err != nil {
+    return nil, errors.New("could not read config: " + err.Error())
+  }
+  var cfg Config
+  if err := yaml.Unmarshal(b, &cfg); err != nil {
+    return nil, errors.New("invalid config: " + err.Error())
+  }
+  return &cfg, nil
+}
+SNIPCODE_HEREDOC
+
+---
+
+## internal/writer/writer.go
+
+cat <<SNIPCODE_HEREDOC
+package writer
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
+)
+
+// generateTree creates a string representation of the file tree based on the provided file paths.
+// It mimics the output of the 'tree' command in an OS-agnostic way.
+func generateTree(files []string) string {
+	var treeBuilder strings.Builder
+	treeBuilder.WriteString(".\n") // Start with the root directory representation
+
+	// nodes maps directory paths to a sorted list of their children's base names.
+	nodes := make(map[string][]string)
+	// isDir tracks whether a given full path corresponds to a directory.
+	isDir := make(map[string]bool)
+
+	// Initialize root node
+	nodes["."] = []string{}
+	isDir["."] = true
+
+	// Populate nodes and isDir maps from the flat list of file paths.
+	for _, file := range files {
+		// Normalize path separators for consistency
+		file = filepath.Clean(file)
+		parts := strings.Split(file, string(filepath.Separator))
+		currentPath := "." // Start from root relative path
+
+		for i, part := range parts {
+			// Skip empty parts resulting from splitting (e.g., leading slash)
+			if part == "" {
+				continue
+			}
+
+			// Construct the full path of the child (directory or file)
+			childPath := filepath.Join(currentPath, part)
+
+			// Ensure the parent directory exists in the nodes map.
+			if _, exists := nodes[currentPath]; !exists {
+				nodes[currentPath] = []string{}
+				isDir[currentPath] = true // If it wasn't known before but has children, it's a dir.
+			}
+
+			// Add the current part (child) to its parent's list if not already present.
+			// This builds the parent-child relationships.
+			found := false
+			for _, existingChild := range nodes[currentPath] {
+				if existingChild == part {
+					found = true
+					break
+				}
+			}
+			if !found {
+				nodes[currentPath] = append(nodes[currentPath], part)
+			}
+
+			// Mark the childPath as a directory if it's not the last part of the original file path.
+			if i < len(parts)-1 {
+				isDir[childPath] = true
+			}
+
+			// Move down to the next level for the next iteration.
+			currentPath = childPath
+		}
+	}
+
+	// Sort the children list for each directory node alphabetically.
+	for k := range nodes {
+		sort.Strings(nodes[k])
+	}
+
+	// Recursive function to actually build the tree string with prefixes.
+	var buildLevel func(dirPath string, prefix string)
+	buildLevel = func(dirPath string, prefix string) {
+		// Get the sorted list of children (base names) for the current directory.
+		children, ok := nodes[dirPath]
+		if !ok || len(children) == 0 {
+			return // No children or directory not explicitly listed (shouldn't happen for populated dirs)
+		}
+
+		for i, childBaseName := range children {
+			isLast := i == len(children)-1                 // Check if this is the last child in the list.
+			childFullPath := filepath.Join(dirPath, childBaseName) // Get the full path of the child.
+			childIsDir := isDir[childFullPath]              // Check if the child is a directory.
+
+			// Determine the correct prefix and connector based on position.
+			connector := "├── "
+			nextPrefix := prefix + "│   " // Prefix for children of this child (if it's a dir).
+			if isLast {
+				connector = "└── "         // Use different connector for the last child.
+				nextPrefix = prefix + "    " // No vertical line needed in the prefix for children of the last child.
+			}
+
+			// Append the formatted line for this child to the tree string.
+			treeBuilder.WriteString(prefix + connector + childBaseName + "\n")
+
+			// If the child is a directory, recursively call buildLevel for its children.
+			if childIsDir {
+				buildLevel(childFullPath, nextPrefix)
+			}
+		}
+	}
+
+	// Start the recursive tree building process from the root directory ".".
+	buildLevel(".", "")
+
+	return treeBuilder.String()
+}
+
+// Write processes the list of files, formats them using a fixed heredoc identifier,
+// optionally generates and appends a file tree, and writes the result to the output file.
+// It logs progress to standard output.
+func Write(out string, files []string, withTree bool) error {
+	var b strings.Builder // Use a strings.Builder for efficient string concatenation.
+	total := 0            // Keep track of the total characters written from file contents.
+
+	// --- Write File Contents ---
+	for _, f := range files {
+		// Get the relative path from the current directory.
+		rel, err := filepath.Rel(".", f)
+		if err != nil {
+			// Handle error getting relative path, though unlikely if collector worked.
+			fmt.Fprintf(os.Stderr, "Error getting relative path for %s: %v\n", f, err)
+			rel = f // Fallback to using the original path.
+		}
+
+		// Write the header and the start of the cat command with the fixed heredoc identifier.
+		// Added extra newlines for better separation as per user request.
+		b.WriteString(fmt.Sprintf("## %s\n\ncat <<SNIPCODE_HEREDOC\n", rel))
+
+		// Read the content of the current file.
+		data, err := os.ReadFile(f)
+		if err != nil {
+			// Log the error and return, failing the whole process if one file can't be read.
+			fmt.Fprintf(os.Stderr, "Error reading file %s: %v\n", f, err)
+			return fmt.Errorf("failed to read file %s: %w", f, err)
+		}
+		// Write the raw file content.
+		b.Write(data)
+
+		// Ensure the content block ends with a newline before the closing heredoc identifier.
+		if len(data) > 0 && data[len(data)-1] != '\n' {
+			b.WriteString("\n")
+		}
+
+		// Write the closing heredoc identifier and the separator.
+		// Added extra newlines for better separation.
+		b.WriteString("SNIPCODE_HEREDOC\n\n---\n\n")
+
+		// Update total size and log progress for the included file.
+		size := len(data)
+		total += size
+		fmt.Printf("➡️ Included %s (%d chars)\n", rel, size)
+	}
+
+	// --- Write File Tree ---
+	if withTree {
+		fmt.Println("🌳 Generating file tree...")
+		b.WriteString("## File Tree\n\n") // Add header for the tree section.
+
+		// Generate the tree string using the OS-agnostic function.
+		// Assumes 'files' is sorted appropriately by the collector. If not, sort here:
+		// sort.Strings(files)
+		treeString := generateTree(files)
+		b.WriteString(treeString)
+
+		// Ensure the output ends with a newline if the tree is not empty.
+		if len(treeString) > 0 && treeString[len(treeString)-1] != '\n' {
+			b.WriteString("\n")
+		}
+		fmt.Println("🌳 Appended file tree")
+	}
+
+	// --- Write Output File ---
+	// Write the entire accumulated string to the specified output file.
+	if err := os.WriteFile(out, []byte(b.String()), 0644); err != nil {
+		// Log error if writing the final output fails.
+		fmt.Fprintf(os.Stderr, "Error writing output file %s: %v\n", out, err)
+		return fmt.Errorf("failed to write output file %s: %w", out, err)
+	}
+
+	// Log the final summary.
+	fmt.Printf("📥 Wrote %s: %d files, %d total content chars\n", out, len(files), total)
+	return nil // Indicate success.
+}
+SNIPCODE_HEREDOC
+
+---
+
+## main.go
+
+cat <<SNIPCODE_HEREDOC
+package main
+
+import (
+  "os"
+
+  log "github.com/sirupsen/logrus"
+  "github.com/urfave/cli/v2"
+
+  "github.com/AxeByte/snipcode.axebyte/internal/collector"
+  "github.com/AxeByte/snipcode.axebyte/internal/config"
+  "github.com/AxeByte/snipcode.axebyte/internal/writer"
+)
+
+func main() {
+  app := &cli.App{
+    Name:  "snipcode",
+    Usage: "Collect & format code for LLM consumption",
+    Commands: []*cli.Command{
+      {Name: "init", Usage: "Generate .grepattern.yaml", Action: config.InitConfig},
+      {Name: "compile", Usage: "Build compilation file", Flags: []cli.Flag{
+         &cli.StringFlag{Name: "output", Aliases: []string{"o"}, Usage: "Override output file"},
+         &cli.BoolFlag{Name: "with-tree", Usage: "Append file tree listing"},
+       }, Action: runCompile},
+    },
+  }
+  if err := app.Run(os.Args); err != nil {
+    log.Fatal(err)
+  }
+}
+
+func runCompile(c *cli.Context) error {
+  log.Info("Loading config from .grepattern.yaml")
+  cfg, err := config.LoadConfig(".grepattern.yaml")
+  if err != nil {
+    return err
+  }
+
+  out := cfg.DefaultName
+  if s := c.String("output"); s != "" {
+    out = s
+  }
+
+  log.Info("Collecting files...")
+  files, err := collector.Collect(".", cfg.IgnorePatterns)
+  if err != nil {
+    return err
+  }
+  log.Infof("Found %d files", len(files))
+
+  if err := writer.Write(out, files, c.Bool("with-tree")); err != nil {
+    return err
+  }
+
+  info, err := os.Stat(out)
+  if err != nil {
+    return err
+  }
+  log.WithFields(log.Fields{"output": out, "files": len(files), "size": info.Size()}).Info("Compilation complete")
+  return nil
+}
+SNIPCODE_HEREDOC
+
+---
+
+## File Tree
+
+.
+├── Makefile
+├── README.md
+├── go.mod
+├── go.sum
+├── internal
+│   ├── collector
+│   │   └── collector.go
+│   ├── config
+│   │   └── config.go
+│   └── writer
+│       └── writer.go
+└── main.go
