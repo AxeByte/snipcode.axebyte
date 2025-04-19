@@ -1,0 +1,9 @@
+# snipcode configuration
+# default_name: output filename
+# ignore_patterns: glob patterns to skip
+
+default_name: comp_code.txt
+ignore_patterns:
+  - "node_modules/**"
+  - "*.test.go"
+  - "docs/**"
