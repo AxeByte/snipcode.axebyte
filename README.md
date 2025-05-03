@@ -17,8 +17,12 @@ ignore_patterns:
 Created via `snipcode init-admin`, with a comprehensive set of default ignore patterns.
 
 ## Installation
+
+- Download desired release version (Always prefer the latest one)
+
 ```bash
-go install ${MODULE_PATH}@latest
+chmod +x {downloadedBinaryName}
+sudo mv {downloadedBinaryName} /usr/local/bin/snipcode
 ```
 
 ## Usage

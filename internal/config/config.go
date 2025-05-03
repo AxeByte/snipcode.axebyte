@@ -48,7 +48,7 @@ func InitAdmin(c *cli.Context) error {
 		"*.sqlite", "*.lock", "*.ink", "*.lockb", "*.test.*", "*.css", "*.jpeg",
 		"docs.go", "logs/**", "deploy.sh", "lefthook.*", ".gitignore", ".env",
 		"*_test*", "*dock*", "*Dock*", "images/*", "*.g4", "*txt*", "output.txt",
-		"README.md", "aaa.json", ".github/**", "package-lock.json", "migrations/**",
+		"README.md", "comp_code.txt", ".github/**", "package-lock.json", "migrations/**",
 		"venv/**", "__pycache__/**", "go.mod", "go.sum", "Dockerfile",
 	}
 	// merge with media + .git defaults

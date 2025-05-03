@@ -11,8 +11,8 @@ build:
 	@mkdir -p $(DIST_DIR)
 	@for t in $(GOOS_ARCH); do \
 		os=$${t%/*}; arch=$${t#*/}; \
-		bin_name=$${APP}-$${os}-$${arch}; \
-		if [ "$$os" = "windows" ]; then bin_name="$${bin_name}.exe"; fi; \
+		bin_name=snipcode$${APP}-$${os}-$${arch}; \
+		if [ "$$os" = "windows" ]; then bin_name="snipcode$${bin_name}.exe"; fi; \
 		bin_path=$(DIST_DIR)/$$bin_name; \
 		echo "  Building for $$os/$$arch..."; \
 		GOOS=$$os GOARCH=$$arch go build -ldflags="-s -w" -o $$bin_path .; \
